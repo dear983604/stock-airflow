@@ -45,7 +45,7 @@ dag = DAG(
 def line_pust(content):
     line_bot_api = LineBotApi(token)
     line_bot_api.push_message(ID, TextSendMessage(text=content))
-    line_bot_api.push_message(ID, TextSendMessage(text='資料時間：' + datetime.datetime.now()))
+    line_bot_api.push_message(ID, TextSendMessage(text='資料時間：' + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
       
 ########## 先與網站請求抓到價格 ##########
 def getstock(stocknumber='2002'):
