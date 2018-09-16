@@ -23,9 +23,9 @@ from linebot.models import *
 ###############################################################################
 
 #自己APP的token
-token='你自己的token'
+token='NvcdSNno+FJMhr5F0Nv5VJ+mXkg8va8BfCttefd7x4DVVhacvrh5l3olFrbJCBvb08gMbI3e+HTWv+9BCZAOao68R5lDszFQeWYPdWoW6l/YA0pH0o2caQNmITFJdPEfZBqmc3Om7gCEuiOiQc/0mAdB04t89/1O/w1cDnyilFU='
 #自己的ID
-ID='你自己的ID'
+ID='Uc88c85f361a7fe893af5caa7650ac125'
 
 ########### dag所有參數，就放在這裡面 ###########
 args = {
