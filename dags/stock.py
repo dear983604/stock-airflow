@@ -39,29 +39,75 @@ dag = DAG(
     default_args=args, #把上方的參數放進去
     schedule_interval='10 * * * * *') #多久執行一次
 
-########### 查看當前價格 ###########
+username = urllib.parse.quote_plus('dear983604') 
+password = urllib.parse.quote_plus('YoWei19870507')
+host = 'ds163870.mlab.com' #主機位置
+port = '63870' #port號碼
+dbname='stockmaster'
+collection='stockmaster'
+
+line_bot_api = LineBotApi('NvcdSNno+FJMhr5F0Nv5VJ+mXkg8va8BfCttefd7x4DVVhacvrh5l3olFrbJCBvb08gMbI3e+HTWv+9BCZAOao68R5lDszFQeWYPdWoW6l/YA0pH0o2caQNmITFJdPEfZBqmc3Om7gCEuiOiQc/0mAdB04t89/1O/w1cDnyilFU=')
+yourid='Uc88c85f361a7fe893af5caa7650ac125'
+#資料庫連接
+def constructor():
+    client = MongoClient('mongodb://%s:%s@%s:%s/%s?authMechanism=SCRAM-SHA-1' % (username, password, host, port,dbname))
+    db = client[collection]
+    return db
+
+# 抓你的股票
+def show_user_stock_fountion():  
+    db=constructor()
+    collect = db['fountion']
+    cel=list(collect.find({"data": 'care_stock'}))
+    return cel
+
+########### 查看當前價格 ###########在Heroku執行查自己股票方法
 def look_price(stock='3624', bs='>', price=31):
-    # 先到yahoo爬取該股票的資料
-    url = 'https://tw.stock.yahoo.com/q/q?s=' + stock
+#    data = show_user_stock_fountion()
+#    for i in data:
+#        stock=i['stock']
+#        bs=i['bs']
+#        price=i['price']
+        
+    url = 'https://tw.stock.yahoo.com/q/q?s=' + stock 
     list_req = requests.get(url)
     soup = BeautifulSoup(list_req.content, "html.parser")
-    getstock= soup.find('b').text
-    #開始進行價格判斷
-    if bs == '<': #判斷大小於
-         if float(getstock) < price:
+    getstock= soup.find('b').text #裡面所有文字內容
+    if bs == '<':
+        if float(getstock) < price:
             get=stock + '的價格：' + getstock
-            line_bot_api = LineBotApi(token)
-            line_bot_api.push_message(ID, TextSendMessage(text=get))
+            line_bot_api.push_message(yourid, TextSendMessage(text=get))
     else:
-         if float(getstock) > price:
+        if float(getstock) > price:
             get=stock + '的價格：' + getstock
-            line_bot_api = LineBotApi(token)
-            line_bot_api.push_message(ID, TextSendMessage(text=get))
+            line_bot_api.push_message(yourid, TextSendMessage(text=get))
+
+####每10秒做job
+second_5_j = schedule.every(10).seconds.do(job)
+
+#    # 先到yahoo爬取該股票的資料
+#    url = 'https://tw.stock.yahoo.com/q/q?s=' + stock
+#    list_req = requests.get(url)
+#    soup = BeautifulSoup(list_req.content, "html.parser")
+#    getstock= soup.find('b').text
+#    #開始進行價格判斷
+#    if bs == '<': #判斷大小於
+#         if float(getstock) < price:
+#            get=stock + '的價格：' + getstock
+#            line_bot_api = LineBotApi(token)
+#            line_bot_api.push_message(ID, TextSendMessage(text=get))
+#    else:
+#         if float(getstock) > price:
+#            get=stock + '的價格：' + getstock
+#            line_bot_api = LineBotApi(token)
+#            line_bot_api.push_message(ID, TextSendMessage(text=get))
 
 ########### 設定你關心的股票 ###########
-data=[{'stock' : '2002','bs' : '<', 'price': 20},
-      {'stock' : '2330','bs' : '>', 'price': 10}
-      ]
+#data=[{'stock' : '2002','bs' : '<', 'price': 20},
+#      {'stock' : '2330','bs' : '>', 'price': 10}
+#      ]
+
+data = show_user_stock_fountion()
 
 ########### 主程式 ###########
 for i in data: #把一個一個股票丟進去執行
